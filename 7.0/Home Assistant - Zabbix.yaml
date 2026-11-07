@@ -2964,7 +2964,7 @@ zabbix_export:
           value: '2'
           description: 'Minimum disk space free'
         - macro: '{$HA.URL}'
-          value: 'http://192.168.10.121:8123'
+          value: 'https://homeassistant.local:8123'
           description: 'Base URL of the Home Assistant instance.'
         - macro: '{$HOST.REACHABLE}'
           value: '1'

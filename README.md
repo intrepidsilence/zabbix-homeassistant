@@ -20,7 +20,7 @@ Agentless monitoring of Home Assistant entities via the REST API:
 
 - Home Assistant instance with REST API enabled  
 - Long-Lived Access Token stored in macro `{$API.TOKEN}`  
-- Accessible URL `{$HA.URL}` (e.g., `http://192.168.10.121:8123`)  
+- Accessible URL `{$HA.URL}` (e.g., `https://homeassistant.local:8123`)  
 - Template applied to a Zabbix host with network access to HA  
 
    | Macro                                    | Example Value                        | Description                                    |
