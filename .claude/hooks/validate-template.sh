@@ -1,44 +1,40 @@
 #!/bin/bash
 # PostToolUse hook: validates the Zabbix template YAML after Edit/Write.
 # Checks: (1) valid YAML syntax, (2) all UUIDs are unique 32-char hex.
+#
+# The edited path comes from tool input, so it is treated as untrusted data:
+# it is matched exactly against the one template file in this repo, and it is
+# handed to Python as an argument, never pasted into Python source.
 
 INPUT=$(cat)
-FILE_PATH=$(echo "$INPUT" | jq -r '.tool_input.file_path // empty')
+FILE_PATH=$(printf '%s' "$INPUT" | jq -r '.tool_input.file_path // empty')
+[ -z "$FILE_PATH" ] && exit 0
 
-# Only validate if the template file was edited
-if [ -z "$FILE_PATH" ] || ! echo "$FILE_PATH" | grep -q "Home Assistant - Zabbix.yaml"; then
-  exit 0
-fi
+# Resolve the repo root from this script's location (.claude/hooks/ -> repo root).
+REPO_ROOT=$(cd "$(dirname "$0")/../.." && pwd -P) || exit 0
+TEMPLATE="$REPO_ROOT/7.0/Home Assistant - Zabbix.yaml"
 
-# Check that file exists
-if [ ! -f "$FILE_PATH" ]; then
-  exit 0
-fi
+# Only validate if the edited file IS the template (exact match after resolving symlinks / ..).
+[ -f "$FILE_PATH" ] || exit 0
+RESOLVED="$(cd "$(dirname "$FILE_PATH")" 2>/dev/null && pwd -P)/$(basename "$FILE_PATH")" || exit 0
+[ "$RESOLVED" = "$TEMPLATE" ] || exit 0
+
+ERRORS=$(python3 -I - "$TEMPLATE" <<'PY' 2>&1
+import re, sys
+from collections import Counter
+import yaml
+
+path = sys.argv[1]
 
 # Check 1: YAML syntax is valid
-YAML_ERR=$(python3 -c "
-import yaml, sys
 try:
-    with open('$FILE_PATH') as f:
-        yaml.safe_load(f)
+    with open(path) as f:
+        data = yaml.safe_load(f)
 except yaml.YAMLError as e:
-    print(str(e), file=sys.stderr)
+    print(f"Template YAML validation failed: {e}", file=sys.stderr)
     sys.exit(1)
-" 2>&1)
-
-if [ $? -ne 0 ]; then
-  echo "Template YAML validation failed: $YAML_ERR" >&2
-  exit 2
-fi
 
 # Check 2: All UUIDs are unique and properly formatted (32-char lowercase hex)
-UUID_ERR=$(python3 -c "
-import yaml, re, sys
-from collections import Counter
-
-with open('$FILE_PATH') as f:
-    data = yaml.safe_load(f)
-
 uuids = []
 def collect(obj):
     if isinstance(obj, dict):
@@ -56,20 +52,19 @@ errors = []
 for u in uuids:
     if not re.match(r'^[0-9a-f]{32}$', str(u)):
         errors.append(f'Invalid UUID format: {u} (must be 32-char lowercase hex, no dashes)')
-
-dupes = [u for u, c in Counter(uuids).items() if c > 1]
-for d in dupes:
+for d in [u for u, c in Counter(uuids).items() if c > 1]:
     errors.append(f'Duplicate UUID: {d}')
 
 if errors:
+    print("Template UUID validation failed:", file=sys.stderr)
     for e in errors:
         print(e, file=sys.stderr)
     sys.exit(1)
-" 2>&1)
+PY
+)
 
 if [ $? -ne 0 ]; then
-  echo "Template UUID validation failed:" >&2
-  echo "$UUID_ERR" >&2
+  echo "$ERRORS" >&2
   exit 2
 fi
 
