@@ -305,6 +305,8 @@ zabbix_export:
             - type: JSONPATH
               parameters:
                 - '$.body[?(@.attributes.device_class=="battery")]'
+              error_handler: CUSTOM_VALUE
+              error_handler_params: '[]'
         - uuid: b21d364cbc23433ca3876572fb74b8bb
           name: HA-camera
           type: DEPENDENT
@@ -409,6 +411,8 @@ zabbix_export:
             - type: JSONPATH
               parameters:
                 - '$.body[?(@.attributes.device_class=="door")]'
+              error_handler: CUSTOM_VALUE
+              error_handler_params: '[]'
         - uuid: 06181b12e10b40bfb707dba3a9f30773
           name: HA-dbm-linkquality
           type: DEPENDENT
@@ -468,6 +472,8 @@ zabbix_export:
             - type: JSONPATH
               parameters:
                 - '$.body[?(@.attributes.device_class=="signal_strength")]'
+              error_handler: CUSTOM_VALUE
+              error_handler_params: '[]'
         - uuid: d1c84360be9c40af8d42a014f504b55f
           name: HA-disk.free
           type: DEPENDENT
@@ -617,6 +623,8 @@ zabbix_export:
             - type: JSONPATH
               parameters:
                 - '$.body[?(@.attributes.device_class=="distance")]'
+              error_handler: CUSTOM_VALUE
+              error_handler_params: '[]'
         - uuid: ca8b557897294617a9335951eb401671
           name: HA-fine-dust
           type: DEPENDENT
@@ -954,6 +962,8 @@ zabbix_export:
             - type: JSONPATH
               parameters:
                 - '$.body[?(@.attributes.device_class=="illuminance")]'
+              error_handler: CUSTOM_VALUE
+              error_handler_params: '[]'
         - uuid: e4b9ec1c521c49789c4cf4bf1ee025ee
           name: HA-kWh
           type: DEPENDENT
@@ -1002,6 +1012,8 @@ zabbix_export:
             - type: JSONPATH
               parameters:
                 - '$.body[?(@.attributes.device_class=="energy")]'
+              error_handler: CUSTOM_VALUE
+              error_handler_params: '[]'
         - uuid: 04a35a2a931f489694ba3d2e17bec1ce
           name: HA-light
           type: DEPENDENT
@@ -1185,6 +1197,8 @@ zabbix_export:
             - type: JSONPATH
               parameters:
                 - '$.body[?(@.attributes.device_class=="humidity")]'
+              error_handler: CUSTOM_VALUE
+              error_handler_params: '[]'
         - uuid: 7d6236e76d2a48718e3908bc68530925
           name: HA-memory-free-mb
           type: DEPENDENT
@@ -1418,6 +1432,8 @@ zabbix_export:
             - type: JSONPATH
               parameters:
                 - '$.body[?(@.attributes.device_class=="atmospheric_pressure")]'
+              error_handler: CUSTOM_VALUE
+              error_handler_params: '[]'
         - uuid: c47b7577f37949e4babb2847fe768a56
           name: HA-processor-use
           type: DEPENDENT
@@ -1834,6 +1850,8 @@ zabbix_export:
             - type: JSONPATH
               parameters:
                 - '$.body[?(@.attributes.device_class=="temperature")]'
+              error_handler: CUSTOM_VALUE
+              error_handler_params: '[]'
         - uuid: 8922c14e83f04a738cddab0e484dfd49
           name: HA-update
           type: DEPENDENT
@@ -1843,7 +1861,7 @@ zabbix_export:
             evaltype: AND
             conditions:
               - macro: '{#ENTITY_ID}'
-                value: '.*_update$'
+                value: '^update\..*_update$'
                 formulaid: A
               - macro: '{#ENTITY_ID}'
                 value: ^update.home_assistant_core_update$
@@ -1967,6 +1985,8 @@ zabbix_export:
             - type: JSONPATH
               parameters:
                 - '$.body[?(@.attributes.device_class=="firmware")]'
+              error_handler: CUSTOM_VALUE
+              error_handler_params: '[]'
         - uuid: 7319aadba90c4c839c29d11b396c6300
           name: HA-uptime
           type: DEPENDENT
@@ -2111,6 +2131,8 @@ zabbix_export:
             - type: JSONPATH
               parameters:
                 - '$.body[?(@.attributes.device_class=="power")]'
+              error_handler: CUSTOM_VALUE
+              error_handler_params: '[]'
         - uuid: 604b0c06f16c4b31a34eb91bb0fb5a9d
           name: HA-weight
           type: DEPENDENT
@@ -2154,6 +2176,8 @@ zabbix_export:
             - type: JSONPATH
               parameters:
                 - '$.body[?(@.attributes.device_class=="weight")]'
+              error_handler: CUSTOM_VALUE
+              error_handler_params: '[]'
         - uuid: 89976aef185a473a8fea54c3adce8aaf
           name: HA-zone
           type: DEPENDENT
